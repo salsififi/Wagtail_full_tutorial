@@ -9,6 +9,11 @@ class BlogIndexPage(Page):
 
     content_panels = Page.content_panels + ["intro"]
 
+    def get_context(self, request, *args, **kwargs):
+        context = super().get_context(request, *args, **kwargs)
+        context["blogpages"] = self.get_children().live().order_by("-first_published_at")
+        return context
+
 
 class BlogPage(Page):
     date = models.DateField("Post date")
