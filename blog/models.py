@@ -1,6 +1,8 @@
 from django import forms
 from django.db import models
+from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
+from taggit.models import TaggedItemBase
 from wagtail.admin.panels import MultiFieldPanel, FieldPanel
 from wagtail.fields import RichTextField
 from wagtail.models import Page, Orderable
@@ -19,11 +21,20 @@ class BlogIndexPage(Page):
         return context
 
 
+class BlogPageTag(TaggedItemBase):
+    content_object = ParentalKey(
+        "BlogPage",
+        on_delete=models.CASCADE,
+        related_name="tagged_items",
+    )
+
+
 class BlogPage(Page):
     date = models.DateField("Post date")
     intro = models.CharField(max_length=250)
     body = RichTextField(blank=True)
     authors = ParentalManyToManyField("Author", blank=True)
+    tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
 
     search_fields = Page.search_fields + [
         index.SearchField("intro"),
@@ -33,7 +44,8 @@ class BlogPage(Page):
     content_panels = Page.content_panels + [
         MultiFieldPanel([
             "date",
-            FieldPanel("authors", widget=forms.CheckboxSelectMultiple)
+            FieldPanel("authors", widget=forms.CheckboxSelectMultiple),
+            "tags",
         ], heading="Blog information"),
         "intro",
         "body",
@@ -77,3 +89,12 @@ class Author(models.Model):
 
     class Meta:
         verbose_name_plural = "Authors"
+
+
+class BlogTagIndexPage(Page):
+    def get_context(self, request, *args, **kwargs):
+        tag = request.GET.get("tag")
+        blogpages = BlogPage.objects.live().filter(tags__name=tag)
+        context = super().get_context(request, *args, **kwargs)
+        context["blogpages"] = blogpages
+        return context
