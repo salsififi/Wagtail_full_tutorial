@@ -18,3 +18,6 @@ le tutoriel intégralement complété.
 à chaque fois.
 - Vous devez créer votre propre super-utilisateur pour accéder à l'administration, 
 avec la commande suivante dans le terminal : `python manage.py createsuperuser`.
+- Le dossier racine, appelé 'mysite' dans le tutoriel officiel, est rebaptisé ici 
+'TUTO_IN_GIT_BRANCHES', et le dossier contenant les sources, également baptisé 'mysite' 
+dans le tutoriel officiel, est rebaptisé ici 'TUTO'.

@@ -35,6 +35,8 @@
         {% wagtailuserbar %}
 
         {% block content %}{% endblock %}
+        
+        {% include "includes/footer.html" %}
 
         {# Global javascript #}
         <script type="text/javascript" src="{% static 'js/TUTO.js' %}"></script>
